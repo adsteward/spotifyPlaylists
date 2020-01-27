@@ -1,3 +1,6 @@
+# my personal ids etc.
+.globals
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
