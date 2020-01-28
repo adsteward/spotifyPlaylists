@@ -6,8 +6,6 @@ Most of these functions are pretty specific to the way I organize/use spotify bu
 Note: all my personal playlist ids/tokens/user id are stored in a separate ignored file so any users would have to add in their own ids/tokens/etc. in a few places.
 
 ## Usage/Contents
-- main.py
-  - Runs other scripts/files if user says so
 - all_music.py
   - To make playlists with either all of the user's saved tracks and tracks from saved albums
   - AND/OR make playlists with every song the user has in a playlist somewhere
