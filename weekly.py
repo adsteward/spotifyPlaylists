@@ -121,10 +121,13 @@ def get_saved_tracks_from_last_week():
 #
 #
 # def add_to_archive(tracks_to_add):
+token_input = input("Do you need to enter a new token? y/n\n")
+if token_input == "y":
+    print("Get a token here: https://developer.spotify.com/console/get-users-profile/")
+    oauth_token = input("Enter your new token below:\n")
 
-def run_weekly():
-    '''
-    Runs it! (results in a new playlist with the appropriate tracks, etc.)
-    '''
+user_input = input("Would you like to make a playlist with your newly liked songs? y/n \n")
+if user_input == "y" or user_input =="Y":
     playlist_id = helper_functions.create_playlist(datetime_to_string(datetime.today()))
     helper_functions.add_tracklist_to_playlist(get_saved_tracks_from_last_week(), playlist_id)
+print("done")

@@ -1,6 +1,7 @@
 import requests
 import helper_functions
 import globals
+import sys
 
 
 '''
@@ -182,4 +183,20 @@ def add_saved_tracks():
     split_tracklist_to_playlist_size_and_add(all_music_uri_list, all_music_playlist_ids)
 
 
+# The part that actually runs
+token_input = input("Do you need to enter a new token? y/n\n")
+if token_input == "y":
+    print("Get a token here: https://developer.spotify.com/console/get-users-profile/")
+    oauth_token = input("Enter your new token below:\n")
 
+
+
+user_input_1 = input("Would you like to make a playlist/s of all the songs in your playlists? y/n \n")
+if user_input_1 == "y" or user_input_1 == "Y":
+    print("this will probably take a few minutes... \nProgress Updates:")
+    add_playlist_tracks()
+user_input_2 = input("Would you like to make a playlist/s of all the songs in your library (both saved songs and albums)? y/n \n")
+if user_input_2 == "y" or user_input_2 == "Y":
+    print("this will probably take a few minutes... \nProgress Updates:")
+    add_saved_tracks()
+print("done")
