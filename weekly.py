@@ -59,20 +59,8 @@ def get_last_weeks_playlist():
     '''
     last_week_date = datetime.today() - timedelta(days=7)
     last_week_str = datetime_to_string(last_week_date)
+    return helper_functions.get_playlist_by_name(last_week_str)
 
-    last_weeks_playlist_id = ""
-    my_playlists_url = f'https://api.spotify.com/v1/users/{my_user_id}/playlists?limit=50'
-    response = requests.get(my_playlists_url, headers={"Content-Type": "application/json",
-        "Authorization": "Bearer {}".format(oauth_token)})
-    helper_functions.check_response(response)
-    json_response = response.json()
-
-    for i in json_response["items"]:
-        if i['name'] == last_week_str:
-            last_weeks_playlist_id = i["id"]
-    if last_weeks_playlist_id == "":
-        last_weeks_playlist_id = input("There's been an issue, please enter the URI of last week's playlist: \n")
-    return last_weeks_playlist_id
 
 
 
@@ -111,16 +99,29 @@ def get_saved_tracks_from_last_week():
 
 
 
-# def get_old_rotating_tracks():
-#     # old if over 1 month (28 days)
-    #jkjk old if track is in playlist from 4 weeks ago
-#     old_rotating_tracks = []
-#     return old_rotating_tracks
-#
-# def delete_old_from_rotating(old_rotating_tracks):
-#
-#
-# def add_to_archive(tracks_to_add):
+def get_old_rotating_tracks():
+    '''
+    Gets the tracks that are in rotating but are also
+    in the weeklyplaylist from 4 weeks ago, meaning
+    they are that old
+    :return: List of tracks to move from rotating to
+    the archive
+    '''
+    all_rotating_tracks = helper_functions.get_playlist_tracks(rotating_id, True)
+
+    four_weeks_ago_playlist_name = datetime_to_string(datetime.today() - timedelta(days=7))
+    old_weekly_playlist_id = helper_functions.get_playlist_by_name(four_weeks_ago_playlist_name)
+    old_rotating_tracks = helper_functions.get_playlist_tracks(old_weekly_playlist_id, True)
+
+    tracks_to_move = []
+    for track in all_rotating_tracks:
+        if track in old_rotating_tracks:
+            tracks_to_move.append(track)
+
+    return tracks_to_move
+
+
+
 token_input = input("Do you need to enter a new token? y/n\n")
 if token_input == "y":
     print("Get a token here: https://developer.spotify.com/console/get-users-profile/")
@@ -130,4 +131,12 @@ user_input = input("Would you like to make a playlist with your newly liked song
 if user_input == "y" or user_input =="Y":
     playlist_id = helper_functions.create_playlist(datetime_to_string(datetime.today()))
     helper_functions.add_tracklist_to_playlist(get_saved_tracks_from_last_week(), playlist_id)
+
+user_input_1 = input("Would you like to move old songs in rotating to archive? y/n \n")
+if user_input == "y" or user_input =="Y":
+    tracks_to_move = get_old_rotating_tracks()
+    helper_functions.clear_playlist(rotating_id, tracks_to_move)
+    helper_functions.add_tracklist_to_playlist(tracks_to_move, twenty_archive_id)
+
+
 print("done")
