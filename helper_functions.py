@@ -67,7 +67,7 @@ def add_list_of_tracklists_to_playlist(list_of_track_lists, playlist_id, replace
     for list in list_of_track_lists:
         add_tracklist_to_playlist(list, playlist_id, replace_tracks)
 
-def clear_playlist(playlist_id):
+def clear_playlist(playlist_id, tracks_to_delete=[]):
     '''
     Deletes all the songs in a playlist.
     Once again, the while loop is to deal with spotify's
@@ -77,10 +77,12 @@ def clear_playlist(playlist_id):
     :param playlist_id: the playlist from which to delete
     :return: nothin'
     '''
+    if len(tracks_to_delete) == 0:
+        tracks_to_delete = get_playlist_tracks(playlist_id, include_duplicates=True)
     more_tracks = True
     while more_tracks:
         playlist_endpoint = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-        tracks_to_delete = get_playlist_tracks(playlist_id, include_duplicates=True)
+
         request_body = json.dumps({
             "uris": tracks_to_delete[:99]
         })
@@ -89,6 +91,7 @@ def clear_playlist(playlist_id):
                                headers={"Content-Type": "application/json",
                                         "Authorization": "Bearer {}".format(globals.token)})
         check_response(response)
+        tracks_to_delete = tracks_to_delete[99:]
         if len(tracks_to_delete) < 100:
             more_tracks = False
 
@@ -147,6 +150,27 @@ def create_playlist(name, description="", public=False):
 
     check_response(response)
     return response.json()['id']
+
+def get_playlist_by_name(playlist_name):
+    '''
+    Goes through the user's playlist to find the one
+    named "playlist_name"
+    :return: the id of that playlist
+    '''
+
+    last_weeks_playlist_id = ""
+    my_playlists_url = f'https://api.spotify.com/v1/users/{globals.my_user_id}/playlists?limit=50'
+    response = requests.get(my_playlists_url, headers={"Content-Type": "application/json",
+        "Authorization": "Bearer {}".format(globals.token)})
+    check_response(response)
+    json_response = response.json()
+
+    for i in json_response["items"]:
+        if i['name'] == playlist_name:
+            last_weeks_playlist_id = i["id"]
+    if last_weeks_playlist_id == "":
+        last_weeks_playlist_id = input("Playlist not found, please enter the URI of the playlist you're looking for: \n")
+    return last_weeks_playlist_id
 
 def check_response(response):
     '''
