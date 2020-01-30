@@ -41,8 +41,8 @@ def add_tracklist_to_playlist(track_list, playlist_id, replace_tracks=False):
     ones to the existing)
     :return: nothin'
     '''
-    if replace_tracks:
-        clear_playlist(playlist_id)
+    # if replace_tracks:
+    #     clear_playlist(playlist_id)
 
     playlist_endpoint = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
     request_body = json.dumps({
@@ -67,7 +67,7 @@ def add_list_of_tracklists_to_playlist(list_of_track_lists, playlist_id, replace
     for list in list_of_track_lists:
         add_tracklist_to_playlist(list, playlist_id, replace_tracks)
 
-def clear_playlist(playlist_id, tracks_to_delete=[]):
+def clear_playlist(playlist_id, tracks_to_delete=None):
     '''
     Deletes all the songs in a playlist.
     Once again, the while loop is to deal with spotify's
@@ -77,7 +77,7 @@ def clear_playlist(playlist_id, tracks_to_delete=[]):
     :param playlist_id: the playlist from which to delete
     :return: nothin'
     '''
-    if len(tracks_to_delete) == 0:
+    if tracks_to_delete == None:
         tracks_to_delete = get_playlist_tracks(playlist_id, include_duplicates=True)
     more_tracks = True
     while more_tracks:
@@ -119,11 +119,11 @@ def get_playlist_tracks(playlist_id, include_duplicates=False):
         count = 0
         #print(json_response)
         for track in json_response["items"]:
-            if not include_duplicates:
-                if track["track"]["uri"] not in playlist_tracks:
+            if track["track"] != None:
+                if not include_duplicates and track["track"]["uri"] not in playlist_tracks:
+                        playlist_tracks.append(track["track"]["uri"])
+                else :
                     playlist_tracks.append(track["track"]["uri"])
-            else :
-                playlist_tracks.append(track["track"]["uri"])
             count = count + 1
         offset = offset + 100
         if count < 100:
@@ -171,6 +171,34 @@ def get_playlist_by_name(playlist_name):
     if last_weeks_playlist_id == "":
         last_weeks_playlist_id = input("Playlist not found, please enter the URI of the playlist you're looking for: \n")
     return last_weeks_playlist_id
+
+def get_playlist_list():
+    '''
+    :return: A list of every id of a playlist
+    created by the user and except for the playlists
+    created by this script
+    '''
+    playlist_list = []
+    # more_playlists and offset exist to deal with spotify's
+    # limitations on how many playlists you can get at once
+    more_playlists= True
+    offset = 0
+    while more_playlists:
+        my_playlists_url = f'https://api.spotify.com/v1/users/{globals.my_user_id}/playlists?limit=50&offset={offset}'
+        response = requests.get(my_playlists_url, headers={"Content-Type": "application/json",
+        "Authorization": "Bearer {}".format(globals.token)})
+        check_response(response)
+        json_response = response.json()
+
+        count = 0
+        for i in json_response["items"]:
+            if i["owner"]["id"] == globals.my_user_id and i['id'] not in globals.all_music_playlist_ids and i["id"] not in globals.playlist_tracks_ids:
+                playlist_list.append(i["id"])
+            count = count + 1
+        offset = offset + 50
+        if count < 50:
+            more_playlists = False
+    return playlist_list
 
 def check_response(response):
     '''

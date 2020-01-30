@@ -52,14 +52,16 @@ def to_listen_complete():
     new_music_tracklist = helper_functions.get_playlist_tracks(new_music_friday_id)
     total_list = totalList(discover_tracklist, release_tracklist, new_music_tracklist)
     split_list = helper_functions.split_track_list(50, total_list)
-    helper_functions.add_tracklist_to_playlist(split_list, to_listen_to_id, True)
+    helper_functions.add_list_of_tracklists_to_playlist(split_list, to_listen_to_id, True)
 
-token_input = input("Do you need to enter a new token? y/n\n")
-if token_input == "y":
-    print("Get a token here: https://developer.spotify.com/console/get-users-profile/")
-    oauth_token = input("Enter your new token below:\n")
+# token_input = input("Do you need to enter a new token? y/n\n")
+# if token_input == "y":
+#     print("Get a token here: https://developer.spotify.com/console/get-users-profile/")
+#     oauth_token = input("Enter your new token below:\n")
+
 
 user_input = input("Would you like to make a to Listen to playlist? y/n \n")
 if user_input == "y" or user_input == "Y" :
+    helper_functions.clear_playlist(to_listen_to_id)
     to_listen_complete()
 print("done")
