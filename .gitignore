@@ -1,5 +1,11 @@
 # my personal ids etc.
-.globals.py
+globals.py
+pip-selfcheck.json
+Pipfile
+Pipfile.lock
+pyvenv.cfg
+.gitignore
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
