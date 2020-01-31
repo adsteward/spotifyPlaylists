@@ -54,10 +54,11 @@ def to_listen_complete():
     split_list = helper_functions.split_track_list(50, total_list)
     helper_functions.add_list_of_tracklists_to_playlist(split_list, to_listen_to_id, True)
 
-# token_input = input("Do you need to enter a new token? y/n\n")
-# if token_input == "y":
-#     print("Get a token here: https://developer.spotify.com/console/get-users-profile/")
-#     oauth_token = input("Enter your new token below:\n")
+token_input = input("Do you need to enter a new token? y/n\n")
+if token_input == "y":
+    print("Get a token here: https://developer.spotify.com/console/get-users-profile/")
+    oauth_token = input("Enter your new token below:\n")
+    helper_functions.set_token(oauth_token)
 
 
 user_input = input("Would you like to make a to Listen to playlist? y/n \n")

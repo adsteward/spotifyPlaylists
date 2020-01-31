@@ -12,6 +12,9 @@ Various functions used across the scripts
     7. check_response(response):
     
 '''
+def set_token(token):
+    globals.token = token
+
 
 def split_track_list(limit, track_list):
     '''
@@ -84,15 +87,15 @@ def clear_playlist(playlist_id, tracks_to_delete=None):
         playlist_endpoint = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
 
         request_body = json.dumps({
-            "uris": tracks_to_delete[:99]
+            "uris": tracks_to_delete[:100]
         })
         response = requests.delete(url=playlist_endpoint,
                                data=request_body,
                                headers={"Content-Type": "application/json",
                                         "Authorization": "Bearer {}".format(globals.token)})
         check_response(response)
-        tracks_to_delete = tracks_to_delete[99:]
-        if len(tracks_to_delete) < 100:
+        tracks_to_delete = tracks_to_delete[100:]
+        if len(tracks_to_delete) == 0:
             more_tracks = False
 
 

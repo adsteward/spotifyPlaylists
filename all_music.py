@@ -188,6 +188,7 @@ token_input = input("Do you need to enter a new token? y/n\n")
 if token_input == "y":
     print("Get a token here: https://developer.spotify.com/console/get-users-profile/")
     oauth_token = input("Enter your new token below:\n")
+    helper_functions.set_token(oauth_token)
 
 
 
