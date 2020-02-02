@@ -98,7 +98,6 @@ def get_saved_tracks_from_last_week():
     return saved_tracks
 
 
-
 def get_old_rotating_tracks():
     '''
     Gets the tracks that are in rotating but are also
@@ -109,9 +108,11 @@ def get_old_rotating_tracks():
     '''
     all_rotating_tracks = helper_functions.get_playlist_tracks(rotating_id, True)
 
-    four_weeks_ago_playlist_name = datetime_to_string(datetime.today() - timedelta(days=7))
+    four_weeks_ago_playlist_name = datetime_to_string(datetime.today() - timedelta(days=35))
     old_weekly_playlist_id = helper_functions.get_playlist_by_name(four_weeks_ago_playlist_name)
     old_rotating_tracks = helper_functions.get_playlist_tracks(old_weekly_playlist_id, True)
+    print(len(all_rotating_tracks))
+    print(len(old_rotating_tracks))
 
     tracks_to_move = []
     for track in all_rotating_tracks:
@@ -131,11 +132,15 @@ if token_input == "y":
 user_input = input("Would you like to make a playlist with your newly liked songs? y/n \n")
 if user_input == "y" or user_input =="Y":
     playlist_id = helper_functions.create_playlist(datetime_to_string(datetime.today()))
-    helper_functions.add_tracklist_to_playlist(get_saved_tracks_from_last_week(), playlist_id)
+    newly_saved_tracks = helper_functions.split_track_list(100, get_saved_tracks_from_last_week())
+    print(len(newly_saved_tracks))
+    helper_functions.add_list_of_tracklists_to_playlist(newly_saved_tracks, playlist_id)
 
 user_input_1 = input("Would you like to move old songs in rotating to archive? y/n \n")
-if user_input == "y" or user_input =="Y":
+if user_input_1 == "y" or user_input == "Y":
     tracks_to_move = get_old_rotating_tracks()
+    if len(tracks_to_move) == 0:
+        print("there appears to be no crossover between the old weekly playlist and rotating.")
     helper_functions.clear_playlist(rotating_id, tracks_to_move)
     helper_functions.add_tracklist_to_playlist(tracks_to_move, twenty_archive_id)
 

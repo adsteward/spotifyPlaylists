@@ -23,7 +23,7 @@ def split_track_list(limit, track_list):
     :param track_list: the list of tracks to split up
     :return: A list of lists of tracks
     '''
-    num_of_lists = len(track_list) // limit + 1
+    num_of_lists = len(track_list) // (limit + 1)
     split_list = []
     for i in range(num_of_lists + 1):
         if len(track_list) > limit:
@@ -46,8 +46,9 @@ def add_tracklist_to_playlist(track_list, playlist_id, replace_tracks=False):
     '''
     # if replace_tracks:
     #     clear_playlist(playlist_id)
-
+    print(playlist_id)
     playlist_endpoint = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
+    print(len(track_list))
     request_body = json.dumps({
         "uris": track_list
     })
