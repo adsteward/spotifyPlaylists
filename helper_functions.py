@@ -46,9 +46,7 @@ def add_tracklist_to_playlist(track_list, playlist_id, replace_tracks=False):
     '''
     # if replace_tracks:
     #     clear_playlist(playlist_id)
-    print(playlist_id)
     playlist_endpoint = f"https://api.spotify.com/v1/playlists/{playlist_id}/tracks"
-    print(len(track_list))
     request_body = json.dumps({
         "uris": track_list
     })
@@ -121,7 +119,6 @@ def get_playlist_tracks(playlist_id, include_duplicates=False):
         json_response = response.json()
 
         count = 0
-        #print(json_response)
         for track in json_response["items"]:
             if track["track"] != None:
                 if not include_duplicates and track["track"]["uri"] not in playlist_tracks:
@@ -213,3 +210,28 @@ def check_response(response):
     if response.status_code != 200 and response.status_code != 201:
         raise ValueError(f"Error: response.status_code = {response.status_code}")
 
+def get_top_tracks(time_frame, limit=100, include_duplicates=False):
+    '''
+    Gets all of the tracks of a certain playlist
+    :param time_frame: of top tracks
+    :param include_duplicates: whether or not to keep any duplicate
+    tracks in the playlist
+    :return: A list of all the tracks in a playlist
+    '''
+    playlist_tracks = []
+    # more_playlists and offset exist to deal with spotify's
+    # limitations on how many playlists you can get at once
+    more_tracks_to_get = True
+    offset = 0
+    while more_tracks_to_get:
+        top_tracks_url = f'https://api.spotify.com/v1/me/top/tracks?time_range={time_frame}&limit=50&offset={offset}'
+        response = requests.get(top_tracks_url, headers={"Content-Type": "application/json",
+                                                              "Authorization": "Bearer {}".format(globals.token)})
+        check_response(response)
+        json_response = response.json()
+        for track in json_response["items"]:
+            playlist_tracks.append(track["uri"])
+        offset = offset + 49
+        if offset > limit:
+            more_tracks_to_get = False
+    return playlist_tracks
